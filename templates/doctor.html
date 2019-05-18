@@ -1,0 +1,131 @@
+{% extends 'framepage.html' %}
+{% block content %}
+{% if session['logged_in'] == True %}
+
+<!-- Header -->
+<header class="w3-container w3-green w3-center" style="padding:128px 16px">
+  <h1 class="w3-margin w3-jumbo">Doctor</h1>
+</header>
+
+
+<!-- Second Grid -->
+<div class="w3-row-padding w3-light-grey w3-padding-64 w3-container">
+  <div class="w3-content">
+    <div class="w3-twothird">
+      <h1>Doctor details</h1>
+      <div class="row justify-content-cente" ><!--
+        <div class="card card-sm">
+          <div class="card-body row no-gutters align-items-center">
+            <div class="col">
+              <input id="searching" class="form-control form-control-lg form-control-borderless" type="search" placeholder="Enter the name ">
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-lg btn-success" type="button" onclick="playboy()">
+                Search
+              </button>
+            </div>
+          </div>
+        </div>-->
+      </div>
+      <div class="row" style="padding-bottom: 40px;">
+        <div class="col-3">
+          <input class="btn btn-primary" style="padding-left: 40px; padding-right: 40px;" type="button" onclick="playboy()" value="Search">
+        </div>
+        <div class="col-5" style="text-align: center;">
+          <input type="input" class="btn" id="searching" placeholder="Enter Username ">
+        </div>
+        <div class="col-4">
+          {% if session['username']=='ADMIN' %}
+          <div class="row">
+            <div class="col-6">
+              <input class="btn btn-primary" style="padding-left: 10px; padding-right: 10px;" type="button" onclick="playboy1()" value="Delete Entery">
+            </div>
+            <div class="col-6">
+              <input class="btn btn-primary" style="padding-left: 10px; padding-right: 10px;" type="button" onclick="document.getElementById('id01').style.display='block'" value="New Entery">
+            </div>
+          </div>
+          
+          {% include 'animationdoc.html' %}
+          {% endif %}
+        </div>
+      </div>
+      <table id="help" class="table table-hover table-bordered" style="visibility: hidden;">
+          <tr>
+            <th>Employee ID</th>
+            <th>Doctor ID</th>
+            <th>Specialization</th>
+            <th>Employee Name</th>
+            <th>Age</th>
+            <th>Contact</th>
+            {% if session['username']=='ADMIN' %}
+            <th>Salary</th>
+            {% endif %}
+          </tr>
+        </table>
+
+      <p class="w3-text-grey"></p>
+    </div>
+  </div>
+</div>
+
+<div class="w3-container w3-black w3-center w3-opacity w3-padding-64">
+    <h1 class="w3-margin w3-xlarge">Quote of the day: “Fear cuts deeper than swords.”</h1>
+</div>
+
+<script>
+
+// Used to toggle the menu on small screens when clicking on the menu button
+function myFunction() {
+  var x = document.getElementById("navDemo");
+  if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+  } else {
+    x.className = x.className.replace(" w3-show", "");
+  }
+}
+function playboy(){
+  var damdam = document.getElementById("searching").value ;
+  console.log(damdam);
+  document.getElementById('help').style.visibility="";
+  $.ajax({
+    type:"POST",
+    url:"/doc_info",
+    data:"damdam="+ damdam ,
+    success:function(string){
+        var str = JSON.parse(string)['data'] ;
+        console.log(str) ;
+        help = document.getElementById('help') ;
+        help.innerHTML = help.rows[0].innerHTML ;
+        for(i=0;i<str.length;i++){
+            var row = document.createElement('TR') ;
+            help.appendChild(row) ;
+            for(j=0 ; j<str[0].length ;j++){
+              var col = document.createElement('TD') ;
+              col.appendChild(document.createTextNode(str[i][j]));
+              row.appendChild(col) ;
+            }
+            console.log(help.innerHTML[i])
+        }
+    }
+  });
+}
+
+function playboy1(){
+  var damdam = document.getElementById("searching").value ;
+  console.log(damdam);
+  document.getElementById('help').style.visibility="";
+  $.ajax({
+    type:"POST",
+    url:"/doc_del",
+    data:"damdam="+ damdam ,
+    success:function(string){}
+  });
+}
+</script>
+{% else %}
+  {% include 'home.html' %}
+<script type="text/javascript">
+  alert("You need to Login")
+</script>
+{% endif %}
+{% endblock %}
